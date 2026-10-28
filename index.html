@@ -217,6 +217,8 @@ button.btn{border:none;width:100%;font-family:inherit;cursor:pointer}
 @keyframes rise{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:none}}
 @keyframes spin{to{transform:rotate(360deg)}}
 @media (prefers-reduced-motion:reduce){#splash img,#splash p,#splash .rays{animation:none}}
+.cam .up{position:absolute;left:3px;bottom:3px;right:3px;font-size:9.5px;font-weight:800;line-height:1.1;padding:2px 3px;border-radius:4px;background:rgba(0,0,0,.62);color:#fff;text-align:center}
+.cam .up.sent{background:rgba(47,125,79,.92)}
 </style>
 <div id="splash" role="img" aria-label="Chicago's Own Hilario for School Board President">
   <div class="rays"></div>
@@ -277,6 +279,8 @@ button.btn{border:none;width:100%;font-family:inherit;cursor:pointer}
 
 <section id="v-report" class="view" style="display:grid;gap:14px" hidden>
   <div class="page-h"><h1 class="ph">Report</h1><p>Every placed sign, who did it, when, and the photos. <span id="rep-date"></span></p></div>
+  <p class="note-s" id="up-status" style="margin:0"></p>
+  <button type="button" class="btn sm" id="up-retry" hidden>Send waiting photos to Drive</button>
   <button type="button" class="btn sun" id="rep-send">Send report</button>
   <p class="note-s">Opens your phone's share sheet so you can text or email it. On a computer it saves a file instead.</p>
   <div id="rep-body" class="rep"></div>
@@ -469,6 +473,7 @@ document.getElementById("app").addEventListener("click",e=>{
 
 
 NOTES.r3=NOTES.r1;
+const UPLOAD_URL="";const UPLOAD_KEY="hilario26";
 const DRIVE={r1:"https://drive.google.com/drive/folders/1bRZt8iZ49qBWo_ZVxm84ascHMH-2w9_r",r3:"https://drive.google.com/drive/folders/1uUw_3luI33WaKQBoY2DewvfgTsfyZD9V",r2:"https://drive.google.com/drive/folders/1cdwxGl3n0TIgolZWPNKdGtcagUWP8US3"};
 // ---- placed-by, timestamps, photos ----
 let meta=ls.get("sr-meta",{}),PH={};
@@ -476,17 +481,18 @@ const saveMeta=()=>ls.set("sr-meta",meta);
 const esc=t=>String(t||"").replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
 const fmt=t=>t?new Date(t).toLocaleTimeString([],{hour:"numeric",minute:"2-digit"}):"";
 function stamp(k,m,on){const M=meta[k]||(meta[k]={t:{}});M.t=M.t||{};if(on){M.t[m]=Date.now();if(!M.by&&ls.get("sr-name",""))M.by=ls.get("sr-name","")}else delete M.t[m];saveMeta()}
-function camBtn(k,m){const id=k+"."+m,img=PH[id];return `<label class="cam${img?" has":""}">${img?`<img src="${img}" alt="Photo of this sign">`:"Photo"}<input type="file" accept="image/*" capture="environment" data-ph="${id}"></label>`}
+function camBtn(k,m){const id=k+"."+m,img=PH[id],u=(typeof UP!=="undefined")&&UP[id];return `<label class="cam${img?" has":""}">${img?`<img src="${img}" alt="Photo of this sign">${UPLOAD_URL?`<span class="up ${u||"wait"}">${u==="sent"?"✓ Drive":u==="sending"?"Sending":"Waiting"}</span>`:""}`:"Photo"}<input type="file" accept="image/*" capture="environment" data-ph="${id}"></label>`}
 function byRow(k,done){const M=meta[k]||{},ts=Object.values(M.t||{}),last=ts.length?Math.max(...ts):0;
   return `<div class="by${done&&!M.by?" need":""}"><label>Placed by<input type="text" data-by="${k}" value="${esc(M.by)}" placeholder="Your name" autocomplete="name" enterkeyhint="done"></label>${last?`<span class="when">Last sign ${fmt(last)}</span>`:""}</div>`}
 let db=null;
-function idb(){return new Promise(res=>{try{const r=indexedDB.open("hilario-signs",1);r.onupgradeneeded=()=>r.result.createObjectStore("photos");r.onsuccess=()=>{db=r.result;res(db)};r.onerror=()=>res(null)}catch(e){res(null)}})}
+function idb(){return new Promise(res=>{try{const r=indexedDB.open("hilario-signs",2);r.onupgradeneeded=()=>{const d=r.result;if(!d.objectStoreNames.contains("photos"))d.createObjectStore("photos");if(!d.objectStoreNames.contains("queue"))d.createObjectStore("queue")};r.onsuccess=()=>{db=r.result;res(db)};r.onerror=()=>res(null)}catch(e){res(null)}})}
 function putPhoto(id,url){PH[id]=url;if(!db)return;try{db.transaction("photos","readwrite").objectStore("photos").put(url,id)}catch(e){}}
 async function loadPhotos(){await idb();if(!db)return;await new Promise(res=>{try{const q=db.transaction("photos").objectStore("photos").openCursor();q.onsuccess=()=>{const c=q.result;if(c){PH[c.key]=c.value;c.continue()}else res()};q.onerror=res}catch(e){res()}})}
-function shrink(file){return new Promise((res,rej)=>{const img=new Image(),u=URL.createObjectURL(file);img.onload=()=>{const s=Math.min(1,900/Math.max(img.width,img.height)),c=document.createElement("canvas");c.width=Math.round(img.width*s);c.height=Math.round(img.height*s);c.getContext("2d").drawImage(img,0,0,c.width,c.height);URL.revokeObjectURL(u);res(c.toDataURL("image/jpeg",.62))};img.onerror=rej;img.src=u})}
+function shrink(file,max=900,q=.62){return new Promise((res,rej)=>{const img=new Image(),u=URL.createObjectURL(file);img.onload=()=>{const s=Math.min(1,max/Math.max(img.width,img.height)),c=document.createElement("canvas");c.width=Math.round(img.width*s);c.height=Math.round(img.height*s);c.getContext("2d").drawImage(img,0,0,c.width,c.height);URL.revokeObjectURL(u);res(c.toDataURL("image/jpeg",q))};img.onerror=rej;img.src=u})}
 document.getElementById("app").addEventListener("change",async e=>{
   const f=e.target.closest("[data-ph]");if(!f||!f.files[0])return;const id=f.dataset.ph,[r,l,i,...rest]=id.split("."),m=+rest.pop(),k=[r,l,i,...rest].join(".");
-  try{putPhoto(id,await shrink(f.files[0]))}catch(err){alert("That photo couldn't be read. Try again.");return}
+  const file=f.files[0];const geo=getGeo();try{putPhoto(id,await shrink(file))}catch(err){alert("That photo couldn't be read. Try again.");return}
+  if(UPLOAD_URL){try{const big=await shrink(file,1800,.8);queuePhoto(id,big,await geo)}catch(e){}}
   const a=got(k).slice();if(!a[m]){a[m]=true;st[k]=a;stamp(k,m,true);save()}render();
 });
 document.getElementById("app").addEventListener("input",e=>{const b=e.target.closest("[data-by]");if(!b)return;const k=b.dataset.by;(meta[k]||(meta[k]={t:{}})).by=b.value.trim();if(b.value.trim())ls.set("sr-name",b.value.trim());saveMeta();b.closest(".by").classList.remove("need")});
@@ -529,5 +535,30 @@ loadPhotos().then(route);
 (function(){const s=document.getElementById("splash");if(!s)return;const rm=matchMedia("(prefers-reduced-motion:reduce)").matches;
   const go=()=>{if(s.classList.contains("out"))return;s.classList.add("out");setTimeout(()=>s.remove(),600)};
   s.addEventListener("click",go);setTimeout(go,rm?700:1700)})();
+
+// ---- send photos to Drive ----
+let UP=ls.get("sr-up",{});const saveUp=()=>ls.set("sr-up",UP);
+function getGeo(){return new Promise(res=>{try{if(!navigator.geolocation)return res(null);navigator.geolocation.getCurrentPosition(p=>res({lat:+p.coords.latitude.toFixed(6),lng:+p.coords.longitude.toFixed(6),acc:Math.round(p.coords.accuracy)}),()=>res(null),{enableHighAccuracy:true,timeout:9000,maximumAge:60000})}catch(e){res(null)}})}
+function stopInfo(id){const parts=id.split("."),r=parts[0],l=parts[1],i=+parts[2],m=+parts.at(-1);const run=RUNS[r],leg=run.legs.find(x=>x.k===l),s=leg.stops[i];
+  const list=stopsOf(run,leg),j=list.findIndex(o=>o.i===i),sp=spotsOf(run,{s,i,f:s[4]||{}});return {r,run,leg,s,num:j+1,spot:(sp[m]||{}).t||("spot "+(m+1)),k:parts.slice(0,-1).join(".")}}
+function photoName(id,geo,t){const x=stopInfo(id),d=new Date(t),pad=n=>String(n).padStart(2,"0");
+  const when=`${d.getFullYear()}-${pad(d.getMonth()+1)}-${pad(d.getDate())} ${pad(d.getHours())}${pad(d.getMinutes())}`;
+  return `${x.run.name} ${pad(x.num)} ${x.s[0].replace(/\//g,"-")} - ${x.spot.replace(/[½]/g,"half").replace(/\//g,"-")} - ${when}${geo?` - ${geo.lat},${geo.lng}`:""}.jpg`}
+async function queuePhoto(id,img,geo){const t=Date.now();const x=stopInfo(id),M=meta[x.k]||{};
+  const job={id,run:x.r,image:img,name:photoName(id,geo,t),desc:[`Placed by: ${M.by||ls.get("sr-name","")||"(no name)"}`,`Stop: ${x.s[0]} (${x.s[1]})`,`Spot: ${x.spot}`,`Time: ${new Date(t).toLocaleString()}`,geo?`GPS: ${geo.lat}, ${geo.lng} (±${geo.acc} m) https://maps.google.com/?q=${geo.lat},${geo.lng}`:"GPS: not available"].join("\n")};
+  UP[id]="wait";saveUp();if(db){try{db.transaction("queue","readwrite").objectStore("queue").put(job,id)}catch(e){}}
+  render();sendJob(job)}
+async function sendJob(job){if(!UPLOAD_URL||!navigator.onLine)return false;UP[job.id]="sending";saveUp();
+  try{const r=await fetch(UPLOAD_URL,{method:"POST",headers:{"Content-Type":"text/plain;charset=utf-8"},body:JSON.stringify({key:UPLOAD_KEY,run:job.run,name:job.name,desc:job.desc,image:job.image}),redirect:"follow"});
+    const j=await r.json();if(!j.ok)throw new Error(j.error);UP[job.id]="sent";saveUp();if(db){try{db.transaction("queue","readwrite").objectStore("queue").delete(job.id)}catch(e){}}}
+  catch(e){UP[job.id]="wait";saveUp()}
+  const v=document.getElementById("v-run");if(v&&!v.hidden)render();if(!document.getElementById("v-report").hidden)showReport();return UP[job.id]==="sent"}
+async function flushQueue(){if(!db||!UPLOAD_URL)return;const jobs=await new Promise(res=>{const out=[];try{const q=db.transaction("queue").objectStore("queue").openCursor();q.onsuccess=()=>{const c=q.result;if(c){out.push(c.value);c.continue()}else res(out)};q.onerror=()=>res(out)}catch(e){res(out)}});
+  for(const j of jobs)await sendJob(j);return jobs.length}
+addEventListener("online",flushQueue);setTimeout(flushQueue,2500);setInterval(flushQueue,60000);
+function upStatus(){const el=document.getElementById("up-status"),bt=document.getElementById("up-retry");if(!el)return;if(!UPLOAD_URL){el.textContent="";bt.hidden=true;return}
+  const v=Object.values(UP),sent=v.filter(x=>x==="sent").length,wait=v.length-sent;el.textContent=`Photos in Drive: ${sent}${wait?` · waiting to send: ${wait}`:""}`;bt.hidden=!wait}
+document.getElementById("up-retry").addEventListener("click",async e=>{e.currentTarget.textContent="Sending…";await flushQueue();e.currentTarget.textContent="Send waiting photos to Drive";upStatus()});
+const _sr=showReport;showReport=function(){_sr();upStatus()};
 </script>
 </body></html>
