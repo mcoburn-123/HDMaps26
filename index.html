@@ -1,0 +1,257 @@
+<title>North Side Sign Runs</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@600;700&family=Public+Sans:wght@400;500;600;700&family=JetBrains+Mono:wght@500&display=swap">
+<style>
+/* Layout: crew phone sheet. Sticky run tabs on top, stop cards in the middle, next-stop bar fixed at the bottom. */
+:root{
+  --bg:#f2f4f5;--panel:#fff;--fg:#14202a;--muted:#5b6b78;--line:#d6dde2;--chip:#eef2f4;
+  --lake:#1d6fa5;--red:#c8102e;--irv:#0f7a6c;--add:#b5531b;--done:#2f7d4f;--done-bg:#e6f3eb;--warn:#8a5a00;--warn-bg:#fff4dc;
+  --display:"Barlow Condensed","Arial Narrow",system-ui,sans-serif;
+  --body:"Public Sans",system-ui,-apple-system,"Segoe UI",sans-serif;
+  --mono:"JetBrains Mono",ui-monospace,Menlo,monospace;
+}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){
+  --bg:#0e151b;--panel:#16212a;--fg:#e6edf2;--muted:#93a4b2;--line:#2a3945;--chip:#1d2a34;
+  --lake:#5cb3ea;--red:#ff5a6e;--irv:#3fc1ad;--add:#f08a4b;--done:#5fc58a;--done-bg:#173226;--warn:#f2c46b;--warn-bg:#3a2e12;color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#0e151b;--panel:#16212a;--fg:#e6edf2;--muted:#93a4b2;--line:#2a3945;--chip:#1d2a34;
+  --lake:#5cb3ea;--red:#ff5a6e;--irv:#3fc1ad;--add:#f08a4b;--done:#5fc58a;--done-bg:#173226;--warn:#f2c46b;--warn-bg:#3a2e12;color-scheme:dark}
+body{background:var(--bg);color:var(--fg);font-family:var(--body);font-size:16px;line-height:1.45}
+body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset-top,0px);z-index:10;background:var(--panel)}
+.gut{padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
+.inner{max-width:720px;margin:0 auto}
+h1,h2,h3{font-family:var(--display);margin:0;text-transform:uppercase;letter-spacing:.01em;text-wrap:balance}
+header.top{position:sticky;top:env(safe-area-inset-top,0px);z-index:5;background:var(--panel);border-bottom:1px solid var(--line);padding-block:10px}
+.brand{display:flex;justify-content:space-between;align-items:baseline;gap:8px}
+.brand h1{font-size:24px}
+.brand span{font-family:var(--mono);font-size:12px;color:var(--muted)}
+.tabs{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:8px}
+.tabs button{font:inherit;font-weight:700;font-size:15px;padding:10px;border-radius:10px;border:2px solid var(--line);background:var(--bg);color:var(--fg);cursor:pointer;text-align:left;min-width:0}
+.tabs button small{display:block;font-weight:500;font-size:12px;color:var(--muted)}
+.tabs button[aria-selected="true"]{border-color:var(--fg);background:var(--panel)}
+main{padding-block:16px 120px;display:grid;gap:16px}
+.sum{display:grid;gap:10px}
+.sum p{margin:0;color:var(--muted);font-size:15px}
+.facts{display:flex;flex-wrap:wrap;gap:6px 18px}
+.facts div{display:flex;flex-direction:column}
+.facts b{font-family:var(--display);font-size:22px;font-variant-numeric:tabular-nums}
+.facts span{font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:.06em}
+.bar{height:10px;border-radius:5px;background:var(--chip);overflow:hidden}
+.bar i{display:block;height:100%;width:0;background:var(--done)}
+.opt{display:flex;flex-wrap:wrap;gap:8px;align-items:center}
+.opt span{font-size:13px;color:var(--muted)}
+.opt button{font:inherit;font-size:14px;font-weight:600;padding:8px 14px;border-radius:999px;border:1px solid var(--line);background:var(--panel);color:var(--fg);cursor:pointer}
+.opt button[aria-pressed="true"]{background:var(--fg);color:var(--bg);border-color:var(--fg)}
+.leg{display:grid;gap:10px}
+.leghead{display:flex;flex-wrap:wrap;justify-content:space-between;align-items:baseline;gap:8px;border-bottom:3px solid var(--c);padding-bottom:6px}
+.leghead h2{font-size:24px;color:var(--c)}
+.leghead a{font-size:14px;font-weight:600;color:var(--c)}
+.dots{display:flex;gap:4px}
+.dots i{flex:1;height:6px;border-radius:3px;background:var(--chip)}
+.dots i.on{background:var(--done)}
+.card{background:var(--panel);border:1px solid var(--line);border-radius:12px;overflow:hidden}
+.card.next{border:2px solid var(--c)}
+.card.done{background:var(--done-bg);border-color:transparent}
+.chead{display:grid;grid-template-columns:36px minmax(0,1fr) auto;gap:10px;align-items:start;padding:12px 12px 8px;cursor:pointer}
+.num{width:32px;height:32px;border-radius:50%;display:grid;place-items:center;background:var(--c);color:#fff;font-family:var(--mono);font-size:13px}
+.done .num{background:var(--done)}
+.cname{font-weight:700;font-size:17px}
+.cnt{font-family:var(--mono);font-size:13px;color:var(--muted);white-space:nowrap;padding-top:6px}
+.look{font-size:14px;color:var(--muted);margin-top:2px}
+.badge{display:inline-block;font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.05em;color:var(--warn);background:var(--warn-bg);border-radius:4px;padding:1px 6px;margin-left:6px;vertical-align:2px}
+.spots{list-style:none;margin:0;padding:0 12px 12px;display:grid;gap:6px}
+.spots button{all:unset;box-sizing:border-box;width:100%;display:grid;grid-template-columns:26px minmax(0,1fr);gap:10px;align-items:center;padding:10px 12px;min-height:46px;border-radius:8px;background:var(--chip);cursor:pointer;font-size:15px}
+.spots button.extra{background:transparent;border:1.5px dashed var(--c)}
+.spots button .box{width:22px;height:22px;border-radius:5px;border:2px solid var(--muted);display:grid;place-items:center;font-size:14px;color:#fff}
+.spots button[aria-pressed="true"]{color:var(--muted);text-decoration:line-through}
+.spots button[aria-pressed="true"] .box{background:var(--done);border-color:var(--done)}
+.spots button:focus-visible,.tabs button:focus-visible,.opt button:focus-visible,a:focus-visible,.nextbar a:focus-visible{outline:2px solid var(--c,var(--lake));outline-offset:2px}
+.card.done .spots{display:none}
+.card.done.open .spots{display:grid}
+.cfoot{display:flex;gap:14px;padding:0 12px 12px;font-size:14px}
+.cfoot a{color:var(--c);font-weight:600}
+.card.done .cfoot{display:none}
+.notes{display:grid;gap:12px}
+.note{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:14px}
+.note h3{font-size:19px;margin-bottom:6px}
+.note ul{margin:0;padding-left:18px;font-size:15px;display:grid;gap:4px}
+.note.flag{border-left:4px solid var(--warn)}
+.reset{font:inherit;font-size:14px;background:none;border:1px solid var(--line);color:var(--muted);border-radius:8px;padding:8px 12px;cursor:pointer;justify-self:start}
+.reset.arm{border-color:var(--red);color:var(--red)}
+.nextbar{position:fixed;left:0;right:0;bottom:0;z-index:6;background:var(--fg);color:var(--bg);padding-block:10px calc(10px + env(safe-area-inset-bottom,0px))}
+.nextbar .inner{display:flex;align-items:center;justify-content:space-between;gap:12px}
+.nextbar .lbl{font-size:12px;font-family:var(--mono);text-transform:uppercase;letter-spacing:.06em;opacity:.75}
+.nextbar .nm{font-weight:700;font-size:16px;min-width:0}
+.nextbar a{background:var(--bg);color:var(--fg);font-weight:700;padding:10px 14px;border-radius:10px;text-decoration:none;white-space:nowrap}
+@media (prefers-reduced-motion:no-preference){.bar i{transition:width .3s}}
+.map{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:8px;overflow:hidden}
+.map svg{display:block;width:100%;height:auto;max-height:70vh}
+.map g[data-goto]{cursor:pointer}
+.map .cap{font-size:12px;color:var(--muted);padding:4px 6px 2px}
+</style>
+
+<header class="top gut">
+  <div class="inner">
+    <div class="brand"><h1>North Side Sign Runs</h1><span>HQ near Foster · start 6–10 AM</span></div>
+    <div class="tabs" role="tablist">
+      <button role="tab" id="tab-r1" aria-selected="true">Run 1<small>Lake Shore + Red Line</small></button>
+      <button role="tab" id="tab-r2" aria-selected="false">Run 2<small>Irving Park + Addison</small></button>
+    </div>
+  </div>
+</header>
+
+<main class="gut"><div class="inner" style="display:grid;gap:16px" id="app"></div></main>
+
+<div class="nextbar gut" id="nextbar"><div class="inner">
+  <div style="min-width:0"><div class="lbl" id="nb-lbl">Next stop</div><div class="nm" id="nb-nm"></div></div>
+  <a id="nb-go" href="#" target="_blank" rel="noopener">Directions ↗</a>
+</div></div>
+
+<script>
+const P=["Corner nearest station entrance, facing exit","Opposite corner, facing exit"];
+const ramp=(st)=>[`SB off-ramp end at ${st}`,`NB off-ramp end at ${st}`,`Marine Dr NW corner`,`Marine Dr SW corner`,`${st} ½ blk W, north side`];
+const rl=(x)=>[...P,`${x} ½ blk E, south side`,`${x} ½ blk W, north side`,`Broadway/main street, 4 blks N toward next stop`];
+// stop: [name, maps query, look-for, 5 spots, {w:western-short drops it, also:"Run X"}]
+const RUNS={
+ r1:{name:"Run 1",facts:[["50 + 50","LSD / Red Line"],["20","Stops"],["~13 mi","Loop"],["~4 hrs","With stops"]],
+  sub:"Go south on Lake Shore Drive from Hollywood to North Ave and put signs where the ramps meet the street. Then come back north along the Red Line, station by station, ending near HQ.",
+  legs:[
+   {k:"lsd",t:"Lake Shore Dr · south",c:"var(--lake)",stops:[
+    ["Hollywood Ave","Hollywood Ave & Sheridan Rd","Where the drive ends at Hollywood. Sheridan corner.",["Hollywood & Sheridan NW corner","Hollywood & Sheridan SE corner","Hollywood ½ blk W, north side","Sheridan ½ blk N, west side","Sheridan ½ blk S, east side"]],
+    ["Foster Ave","Foster Ave & Marine Dr","Marine Dr corner just west of the ramps. Foster Beach is to the east.",ramp("Foster")],
+    ["Lawrence Ave","Lawrence Ave & Marine Dr","Marine Dr & Lawrence corner.",ramp("Lawrence")],
+    ["Wilson Ave","Wilson Ave & Marine Dr","Marine Dr & Wilson corner.",ramp("Wilson")],
+    ["Montrose Ave","Montrose Ave & Marine Dr","Montrose Harbor and beach traffic.",ramp("Montrose")],
+    ["Irving Park Rd","Irving Park Rd & Marine Dr","Marine Dr & Irving bus stop.",ramp("Irving"),{also:"Run 2"}],
+    ["Recreation Dr / Addison","Addison St & Lake Shore Dr","Northbound exit only. Addison & Lake Shore bus stop.",["Recreation Dr ramp end","Inner Dr NW corner","Inner Dr SE corner","Addison ½ blk W, north side","Addison ½ blk W, south side"],{also:"Run 2"}],
+    ["Belmont Ave","Belmont Ave & Lake Shore Dr","Belmont Harbor side of the drive.",["SB off-ramp end at Belmont","NB off-ramp end at Belmont","Inner Dr NW corner","Inner Dr SW corner","Belmont ½ blk W, north side"]],
+    ["Fullerton Pkwy","Fullerton Pkwy & Cannon Dr","Cannon Dr corner by the Nature Museum and Lincoln Park Zoo.",["SB off-ramp end at Fullerton","NB off-ramp end at Fullerton","Cannon Dr NW corner","Cannon Dr SW corner","Fullerton ½ blk W, north side"]],
+    ["North Ave","North Ave & LaSalle Dr","North Ave Beach turnoff. Chicago History Museum is at Clark.",["SB off-ramp end at North","NB off-ramp end at North","LaSalle Dr NE corner","LaSalle Dr SW corner","North Ave ½ blk W, north side"]]
+   ]},
+   {k:"red",t:"Red Line · north",c:"var(--red)",stops:[
+    ["North / Clybourn","North Ave & Clybourn Ave & Halsted St","Three-way corner at North, Clybourn and Halsted. Apple store corner.",[...P,"Halsted ½ blk N, west side","North Ave ½ blk W, south side","Clybourn ½ blk NW, east side"]],
+    ["Fullerton","943 W Fullerton Ave","Red, Brown and Purple lines stop here. DePaul campus.",rl("Fullerton")],
+    ["Belmont","945 W Belmont Ave","Three lines stop here. Busy foot traffic.",rl("Belmont")],
+    ["Addison","Addison St & Sheffield Ave","½ block from Wrigley Field.",rl("Addison"),{also:"Run 2"}],
+    ["Sheridan","3940 N Sheridan Rd","Station on Sheridan & Irving. Walgreens and The Bakehouse nearby.",rl("Irving"),{also:"Run 2"}],
+    ["Wilson","4620 N Broadway","Big new station. Truman College across the street.",rl("Wilson")],
+    ["Lawrence","Lawrence Ave & Broadway","Near the Aragon Ballroom and the Green Mill.",rl("Lawrence")],
+    ["Argyle","Argyle St & Broadway","Rebuilt 2025. Argyle's restaurant strip.",rl("Argyle")],
+    ["Berwyn","Berwyn Ave & Broadway","Rebuilt 2025.",rl("Berwyn")],
+    ["Bryn Mawr","Bryn Mawr Ave & Broadway","Bryn Mawr historic district. Last stop, then HQ.",[...P,"Bryn Mawr ½ blk E, south side","Bryn Mawr ½ blk W, north side","Broadway ½ blk N, west side"]]
+   ]}]},
+ r2:{name:"Run 2",option:true,facts:[["50 + 50","Irving / Addison"],["20","Stops"],["~7 mi","Loop"],["~3.5 hrs","With stops"]],
+  sub:"Same plan that worked on Foster and Lawrence. Go west on Irving Park from the lake, turn around, and come back east on Addison. Stop at a main corner about every 4 blocks.",
+  legs:[
+   {k:"irv",t:"Irving Park · west",c:"var(--irv)",street:"Irving Park Rd",stops:[
+    ["Lake Shore Dr / Marine Dr","Irving Park Rd & Marine Dr","Marine Dr bus stop just west of the ramps.",["SB off-ramp end at Irving","NB off-ramp end at Irving","Marine Dr NW corner","Marine Dr SW corner","Irving ½ blk W, north side"],{also:"Run 1"}],
+    ["Halsted St","Irving Park Rd & Halsted St","Busy north–south crossing.",["NE corner","SW corner","Halsted ½ blk N, east side","Halsted ½ blk S, west side","Irving ½ blk W, north side"]],
+    ["Sheridan Rd + Red Line","Irving Park Rd & Sheridan Rd","Sheridan Red Line station, The Bakehouse (opens 7 AM), Nourishing Hope market.",[...P,"Sheridan ½ blk S near The Bakehouse, west side","Irving ½ blk E, south side","Irving ½ blk W, north side"],{also:"Run 1",x:["Sheridan ½ blk N, east side","Sheridan ½ blk S, west side"]}],
+    ["Clark St","Irving Park Rd & Clark St","The bus stop is in the turning lane, so park past it.",["NE corner","SW corner","Clark ½ blk NW, west side","Clark ½ blk SE, east side","Irving ½ blk W, north side"],{x:["Clark NW corner","Clark SE corner"]}],
+    ["Ashland Ave","Irving Park Rd & Ashland Ave","Long Room (opens 8 AM) and Ashland Glass & Mirror. Center median.",["Ashland median planter, N side","Ashland median planter, S side","NE corner","SW corner","Irving ½ blk W, south side"],{x:["Ashland ½ blk N, west side","Ashland ½ blk S, east side"]}],
+    ["Ravenswood (Metra viaduct)","Irving Park Rd & Ravenswood Ave","Commuters walking under the tracks. Check the corners when you get there.",["NE corner","SW corner","Under the viaduct, east side (not on railroad property)","Irving ½ blk E, north side","Irving ½ blk W, south side"]],
+    ["Damen / Lincoln","Irving Park Rd & Damen Ave","Irene's Finer Diner (opens 8 AM) and Tuscan Hen Market. Six-way corner, the busiest on this leg.",["Lincoln NW corner","Lincoln SE corner","Damen NE corner","Damen SW corner","Irving ½ blk W, north side"],{x:["Lincoln NE corner","Damen ½ blk N, east side"]}],
+    ["Western Ave","Irving Park Rd & Western Ave","Vintage Design Mart and Reid Roofing (opens 6:30 AM). Median.",["Western median, N side","Western median, S side","NE corner","SW corner","Irving ½ blk E, north side"],{x:["Western ½ blk N, west side","Western ½ blk S, east side"]}],
+    ["Rockwell St","Irving Park Rd & Rockwell St","Burning Bush Brewery. Quiet stretch by Horner Park.",["NE corner","SW corner","Irving ½ blk E, south side","Irving ½ blk W, north side","Rockwell ½ blk N, east side"],{w:1}],
+    ["California Ave","Irving Park Rd & California Ave","Horner Park on the NW side (no signs inside the park). Turnaround.",["NE corner","SE corner","California ½ blk S, east side","California at the river, east side","Irving ½ blk E, north side"],{w:1}]
+   ]},
+   {k:"add",t:"Addison · east",c:"var(--add)",street:"Addison St",stops:[
+    ["California Ave","Addison St & California Ave","Trigger Chicago (mural out front) and the covered bus stop.",["NW corner","SE corner","California ½ blk N, west side","Addison ½ blk E, south side","Addison ½ blk W, north side"],{w:1}],
+    ["Western Ave","Addison St & Western Ave","Western Addison Plaza: Mariano's, Jewel, 24-hour Dunkin. Median.",["Western median, N side","Western median, S side","NW corner","SE corner","Addison ½ blk E, south side"],{w:1}],
+    ["Damen Ave","Addison St & Damen Ave","Sarah Mart (opens 8 AM) and Avenue Cleaners.",["NW corner","SE corner","Damen ½ blk N, west side","Damen ½ blk S, east side","Addison ½ blk E, south side"],{x:["Damen NE corner","Damen SW corner"]}],
+    ["Ashland / Lincoln","Addison St & Ashland Ave","The bus stop by the shade tree. Ashland has a median.",["Ashland median, N side","Ashland median, S side","NW corner","SE corner","Addison ½ blk E, south side"],{x:["Lincoln corner at Addison","Ashland ½ blk N, west side"]}],
+    ["Southport Ave","Addison St & Southport Ave","Southport Grocery (opens 8 AM) and Alice & Wonder.",["NW corner","SE corner","Southport ½ blk N, west side","Southport ½ blk S, east side","Addison ½ blk E, north side"],{x:["Southport NE corner","Southport SW corner"]}],
+    ["Clark St (Wrigley)","Addison St & Clark St","Wrigley Field. Most eyes on the whole route. Be quick.",["NW corner","SE corner","Clark ½ blk N, west side","Clark ½ blk S, east side","Addison ½ blk W, south side"],{x:["Clark ½ blk N, east side","Addison ½ blk E, north side"]}],
+    ["Sheffield / Red Line","Addison St & Sheffield Ave","Addison Red Line and the 152 bus stop, 1 block east of Clark.",[...P,"Sheffield ½ blk N, east side","Sheffield ½ blk S, west side","Addison ½ blk E, south side"],{also:"Run 1",x:["Under the tracks, east side (not on CTA property)","Addison ½ blk W, north side"]}],
+    ["Halsted St","Addison St & Halsted St","Heart of Middle East Grocery and Roggenart bakery, just south.",["NW corner","SE corner","Halsted ½ blk N, west side","Halsted ½ blk S, east side","Addison ½ blk E, south side"]],
+    ["Broadway","Addison St & Broadway","Bus corridor.",["NW corner","SE corner","Broadway ½ blk N, west side","Broadway ½ blk S, east side","Addison ½ blk E, north side"]],
+    ["Lake Shore Dr / Recreation Dr","Addison St & Lake Shore Dr","Addison & Lake Shore bus stop. Last stop, then HQ.",["Recreation Dr ramp end","Inner Dr NW corner","Inner Dr SE corner","Addison ½ blk W, north side","Addison ½ blk W, south side"],{also:"Run 1"}]
+   ]}]}
+};
+const NOTES={
+ r1:[["How each sign goes up",["Driver pulls up, Chris takes the photo from the car.","One photo per sign, showing the sign and the cross street. Text the photos like usual.","Face signs toward people turning off a ramp or walking out of a station.","Stay outside CTA stations and off the drive's ramps."]]],
+ r2:[["Drop pattern",["Put the first 2 signs on the far corners, facing cars as they turn onto your street.","Put the 3rd on the median or planter if there is one.","Put the 4th and 5th half a block before and after the corner, on opposite sides.","If a spot is blocked, use the same spot one block over at the same stop."]]],
+ both:["Spots marked \"Also Run 1\" or \"Also Run 2\" are on both runs. If both runs happen, the second crew uses only the ½-block spots there and moves the corner signs to the next stop.","City code bars signs on poles, parkways, CTA property and the ramps. If a store says yes, a window or fence there is better than a pole.","Text one photo per sign. No photo means the sign doesn't count."]
+};
+const CO={r1:{lsd:[[41.9856,-87.6552],[41.9764,-87.6522],[41.9692,-87.6496],[41.9655,-87.6486],[41.9619,-87.6469],[41.9546,-87.6452],[41.9483,-87.6440],[41.9401,-87.6395],[41.9257,-87.6336],[41.9110,-87.6290]],
+ red:[[41.9107,-87.6489],[41.9252,-87.6527],[41.9397,-87.6533],[41.9475,-87.6537],[41.9539,-87.6549],[41.9658,-87.6579],[41.9691,-87.6590],[41.9734,-87.6586],[41.9780,-87.6587],[41.9837,-87.6586]]},
+ r2:{irv:[-87.6455,-87.6495,-87.6549,-87.6622,-87.6693,-87.6745,-87.6787,-87.6886,-87.6935,-87.6975],add:[-87.6981,-87.6881,-87.6784,-87.6690,-87.6643,-87.6554,-87.6537,-87.6497,-87.6462,-87.6425]}};
+function mapSVG(r,run,next){
+  let s="",vb,lab=[];
+  const dot=(x,y,leg,o,j)=>{const k=key(r,leg.k,o.i),d=isDone(run,r,leg,o),nx=next&&next.leg===leg&&next.o===o;
+    return `<g data-goto="c-${k.replace(/\./g,"-")}">${nx?`<circle cx="${x}" cy="${y}" r="14" fill="none" stroke="${leg.c}" stroke-width="2.5"/>`:""}<circle cx="${x}" cy="${y}" r="10" fill="${d?"var(--done)":leg.c}" stroke="var(--panel)" stroke-width="2"/><text x="${x}" y="${y+3.5}" fill="#fff" font-family="var(--mono)" font-size="10" text-anchor="middle">${d?"✓":j+1}</text></g>`};
+  if(r==="r1"){
+    const N=41.990,S=41.906,W=-87.666,K=600/(N-S),c=Math.cos(41.95*Math.PI/180),p=(a,b)=>[20+(b-W)*c*K,12+(N-a)*K];vb="0 0 300 630";
+    const sh=CO.r1.lsd.map(([a,b])=>p(a,b+0.0045));
+    s+=`<path d="M${sh[0][0]},0 ${sh.map(q=>"L"+q.join(",")).join(" ")} L${sh.at(-1)[0]},630 L300,630 L300,0Z" fill="var(--chip)"/><text x="280" y="330" transform="rotate(90 280 330)" text-anchor="middle" fill="var(--muted)" font-family="var(--display)" font-size="16" letter-spacing="5">LAKE MICHIGAN</text>`;
+    const hq=p(41.9762,-87.6600);s+=`<rect x="${hq[0]-7}" y="${hq[1]-7}" width="14" height="14" rx="3" fill="var(--fg)"/><text x="${hq[0]+11}" y="${hq[1]+4}" text-anchor="start" fill="var(--fg)" font-family="var(--display)" font-size="14" font-weight="700">HQ</text>`;
+    run.legs.forEach(leg=>{const list=stopsOf(run,leg),pts=list.map(o=>p(...CO.r1[leg.k][o.i]));
+      s+=`<polyline points="${pts.map(q=>q.join(",")).join(" ")}" fill="none" stroke="${leg.c}" stroke-width="5" stroke-linecap="round" stroke-linejoin="round" opacity=".85"/>`;
+      list.forEach((o,j)=>{const [x,y]=pts[j],L=leg.k==="lsd";lab.push(`<text x="${L?x+14:x-14}" y="${y+4}" text-anchor="${L?"start":"end"}" fill="var(--fg)" font-family="var(--body)" font-size="10.5">${o.s[0].split(" / ")[0].replace(/ (Ave|Rd|Pkwy)$/,"")}</text>`);lab.push(dot(x,y,leg,o,j))})});
+    s+=`<text x="20" y="620" fill="var(--red)" font-family="var(--display)" font-size="14" font-weight="700">RED LINE ↑ NORTH</text><text x="150" y="620" fill="var(--lake)" font-family="var(--display)" font-size="14" font-weight="700">LSD ↓ SOUTH</text>`;
+  }else{
+    const sp=38,X0=44,Y={irv:120,add:210};vb="0 0 440 330";
+    const xi=(k,i)=>k==="irv"?X0+(9-i)*sp:X0+i*sp;
+    s+=`<rect x="414" y="0" width="26" height="330" fill="var(--chip)"/><text x="427" y="165" transform="rotate(90 427 165)" text-anchor="middle" fill="var(--muted)" font-family="var(--display)" font-size="13" letter-spacing="4">LAKE · HQ NORTH</text>`;
+    const endx=mode==="wes"?X0+2*sp:X0;s+=`<path d="M${endx},${Y.irv} V${Y.add}" stroke="var(--muted)" stroke-width="2" stroke-dasharray="4 4" fill="none"/><path d="M${X0+9*sp},${Y.irv} C${X0+9*sp+30},${Y.irv} ${X0+9*sp+30},${Y.add} ${X0+9*sp},${Y.add}" stroke="var(--muted)" stroke-width="2" stroke-dasharray="4 4" fill="none"/>`;
+    run.legs.forEach(leg=>{const list=stopsOf(run,leg),y=Y[leg.k],xs=list.map(o=>xi(leg.k,o.i)),up=leg.k==="irv";
+      s+=`<line x1="${Math.min(...xs)}" y1="${y}" x2="${Math.max(...xs)}" y2="${y}" stroke="${leg.c}" stroke-width="5" stroke-linecap="round" opacity=".85"/><text x="${X0-10}" y="${up?18:322}" fill="${leg.c}" font-family="var(--display)" font-size="15" font-weight="700">${up?"← IRVING PARK · WEST":"ADDISON · EAST →"}</text>`;
+      list.forEach((o,j)=>{const xx=xs[j],nm=o.s[0].split(" (")[0].split(" + ")[0].replace(/ (Ave|Rd|St|Dr)\b/g,"").replace("Lake Shore / Marine","LSD").replace("Lake Shore / Recreation","LSD");
+        lab.push(`<text x="${xx}" y="${up?y-16:y+20}" transform="rotate(-50 ${xx} ${up?y-16:y+20})" text-anchor="${up?"start":"end"}" fill="var(--fg)" font-family="var(--body)" font-size="11">${nm}</text>`);lab.push(dot(xx,y,leg,o,j))})});
+  }
+  return `<div class="map"><svg viewBox="${vb}" role="img" aria-label="Route map for ${run.name}">${s}${lab.join("")}</svg><div class="cap">Schematic map. Tap a stop to jump to it. Green means done, a ring marks the next stop.</div></div>`;
+}
+let tab="r1",mode="cal",st={},openDone={};
+const ls={get(k,d){try{const v=localStorage.getItem(k);return v==null?d:JSON.parse(v)}catch(e){return d}},set(k,v){try{localStorage.setItem(k,JSON.stringify(v))}catch(e){}}};
+tab=ls.get("sr-tab","r1");mode=ls.get("sr-mode","cal");st=ls.get("sr-state",{});
+const save=()=>{ls.set("sr-tab",tab);ls.set("sr-mode",mode);ls.set("sr-state",st)};
+const enc=s=>encodeURIComponent(s+", Chicago, IL");
+const nav=q=>`https://www.google.com/maps/dir/?api=1&destination=${enc(q)}&travelmode=driving`;
+const stopsOf=(run,leg)=>leg.stops.map((s,i)=>({s,i,f:s[4]||{}})).filter(o=>!(run.option&&mode==="wes"&&o.f.w));
+const spotsOf=(run,o)=>o.s[3].map(t=>({t,x:false})).concat(run.option&&mode==="wes"&&o.f.x?o.f.x.map(t=>({t,x:true})):[]);
+const key=(r,l,i)=>`${r}.${l}.${i}${mode==="wes"&&RUNS[r].option?".w":""}`;
+const got=(k)=>st[k]||[];
+function isDone(run,r,leg,o){const n=spotsOf(run,o).length,a=got(key(r,leg.k,o.i));return a.filter(Boolean).length>=n}
+function render(){
+  const run=RUNS[tab],app=document.getElementById("app");
+  ["r1","r2"].forEach(r=>document.getElementById("tab-"+r).setAttribute("aria-selected",r===tab));
+  let placed=0,total=0,next=null;
+  run.legs.forEach(leg=>stopsOf(run,leg).forEach(o=>{const n=spotsOf(run,o).length;total+=n;placed+=Math.min(n,got(key(tab,leg.k,o.i)).filter(Boolean).length);if(!next&&!isDone(run,tab,leg,o))next={leg,o}}));
+  let h=`<section class="sum">${mapSVG(tab,run,next)}<p>${run.sub}</p><div class="facts">${run.facts.map(f=>`<div><b>${f[0]}</b><span>${f[1]}</span></div>`).join("")}<div><b>${placed}/${total}</b><span>Signs up</span></div></div><div class="bar"><i style="width:${total?placed/total*100:0}%"></i></div>`;
+  if(run.option)h+=`<div class="opt"><span>Turn around at</span><button type="button" data-mode="cal" aria-pressed="${mode==="cal"}">California (full)</button><button type="button" data-mode="wes" aria-pressed="${mode==="wes"}">Western (short)</button></div><p style="font-size:14px">${mode==="cal"?"Full loop: take California north from Irving to Addison along the river.":"Short loop, about 25 minutes faster. The 10 signs from Rockwell and California go to the busiest middle stops as extra spots with a dashed outline. Each street still gets 50."}</p>`;
+  h+=`</section>`;
+  run.legs.forEach(leg=>{
+    const list=stopsOf(run,leg);
+    h+=`<section class="leg" style="--c:${leg.c}"><div class="leghead"><h2>${leg.t}</h2><a href="https://www.google.com/maps/dir/?api=1&origin=${enc(list[0].s[1])}&destination=${enc(list.at(-1).s[1])}&waypoints=${list.slice(1,-1).slice(0,8).map(o=>enc(o.s[1])).join("%7C")}&travelmode=driving" target="_blank" rel="noopener">Whole leg in Maps ↗</a></div>`;
+    h+=`<div class="dots">${list.map(o=>`<i class="${isDone(run,tab,leg,o)?"on":""}"></i>`).join("")}</div>`;
+    list.forEach((o,j)=>{
+      const k=key(tab,leg.k,o.i),a=got(k),sp=spotsOf(run,o),d=isDone(run,tab,leg,o),isNext=next&&next.leg===leg&&next.o===o;
+      const c=Math.min(sp.length,a.filter(Boolean).length);
+      h+=`<article class="card${d?" done":""}${isNext?" next":""}${openDone[k]?" open":""}" id="c-${k.replace(/\./g,"-")}"><div class="chead" data-toggle="${k}"><span class="num">${d?"✓":j+1}</span><div style="min-width:0"><div class="cname">${o.s[0]}${o.f.also?`<span class="badge">Also ${o.f.also}</span>`:""}</div><div class="look">Look for: ${o.s[2]}</div></div><span class="cnt">${c}/${sp.length}</span></div>`;
+      h+=`<ul class="spots">${sp.map((p,m)=>`<li><button type="button" class="${p.x?"extra":""}" aria-pressed="${!!a[m]}" data-k="${k}" data-m="${m}"><span class="box">${a[m]?"✓":""}</span><span>${p.x?"Extra: ":""}${p.t}</span></button></li>`).join("")}</ul>`;
+      h+=`<div class="cfoot"><a href="${nav(o.s[1])}" target="_blank" rel="noopener">Directions ↗</a><span style="color:var(--muted)">${o.s[1]}</span></div></article>`;
+    });
+    h+=`</section>`;
+  });
+  h+=`<section class="notes">${NOTES[tab].map(n=>`<div class="note"><h3>${n[0]}</h3><ul>${n[1].map(x=>`<li>${x}</li>`).join("")}</ul></div>`).join("")}<div class="note flag"><h3>Both runs</h3><ul>${NOTES.both.map(x=>`<li>${x}</li>`).join("")}</ul></div><button type="button" class="reset" id="reset">Clear ${run.name} ticks</button></section>`;
+  app.innerHTML=h;
+  const nb=document.getElementById("nextbar");
+  if(next){nb.hidden=false;document.getElementById("nb-lbl").textContent=`Next · ${next.leg.t}`;document.getElementById("nb-nm").textContent=next.o.s[0];document.getElementById("nb-go").href=nav(next.o.s[1])}
+  else{document.getElementById("nb-lbl").textContent=`${run.name} done`;document.getElementById("nb-nm").textContent="Head back to HQ";document.getElementById("nb-go").href=nav("Foster Ave & Broadway")}
+}
+let armed=false;
+document.getElementById("app").addEventListener("click",e=>{
+  const g=e.target.closest("[data-goto]");if(g){const el=document.getElementById(g.dataset.goto);if(el)el.scrollIntoView({block:"center"});return}
+  const b=e.target.closest("[data-k]");
+  if(b){const k=b.dataset.k,m=+b.dataset.m,a=got(k).slice();const wasDone=e.target.closest(".card").classList.contains("done");a[m]=!a[m];st[k]=a;save();render();
+    const card=document.querySelector(`#c-${k.replace(/\./g,"-")}`);
+    if(!wasDone&&card&&card.classList.contains("done")){const nx=document.querySelector(".card.next");if(nx)nx.scrollIntoView({block:"start",behavior:matchMedia("(prefers-reduced-motion:reduce)").matches?"auto":"smooth"})}
+    return}
+  const t=e.target.closest("[data-toggle]");if(t&&t.parentElement.classList.contains("done")){openDone[t.dataset.toggle]=!openDone[t.dataset.toggle];render();return}
+  const md=e.target.closest("[data-mode]");if(md){mode=md.dataset.mode;save();render();return}
+  if(e.target.id==="reset"){if(!armed){armed=true;e.target.textContent="Tap again to clear";e.target.classList.add("arm");setTimeout(()=>{armed=false;render()},3000);return}
+    armed=false;Object.keys(st).forEach(k=>{if(k.startsWith(tab+"."))delete st[k]});save();render()}
+});
+["r1","r2"].forEach(r=>document.getElementById("tab-"+r).addEventListener("click",()=>{tab=r;save();render();scrollTo(0,0)}));
+render();
+</script>
