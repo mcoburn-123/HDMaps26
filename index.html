@@ -1,6 +1,17 @@
-<title>North Side Sign Runs</title>
-<meta name="claude:viewport-fit-sides" content="cover">
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@600;700&family=Public+Sans:wght@400;500;600;700&family=JetBrains+Mono:wght@500&display=swap">
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#252470">
+<title>HDMaps26 · Sign Crew Maps</title>
+<meta name="description" content="Route maps, drop spots and photo uploads for the Hilario sign crew.">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%23252470'/%3E%3Cpath d='M10 44a22 22 0 0 1 44 0z' fill='%23f9a01e'/%3E%3C/svg%3E">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@600;700;800&family=Public+Sans:wght@400;500;600;700&family=JetBrains+Mono:wght@500&family=Yellowtail&display=swap">
+</head>
+<body>
 <style>
 /* Layout: crew phone sheet. Sticky run tabs on top, stop cards in the middle, next-stop bar fixed at the bottom. */
 :root{
@@ -88,25 +99,186 @@ main{padding-block:16px 120px;display:grid;gap:16px}
 .map svg{display:block;width:100%;height:auto;max-height:70vh}
 .map g[data-goto]{cursor:pointer}
 .map .cap{font-size:12px;color:var(--muted);padding:4px 6px 2px}
+/* Brand splash: Hilario cream, navy, sunrise and brick. Working pages keep the field-sheet look. */
+:root{--navy:#252470;--sun:#f9a01e;--sun2:#eb8b25;--brick:#ce342c;--blush:#ffb192;--cream:#fff7d6;--cream2:#fdf0b0;--script:"Yellowtail","Brush Script MT",cursive;--bg:#fffcf3;--fg:#1b1a3f;--lake:#1d5fa5}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--navy:#aeb0ff;--sun:#f9a01e;--sun2:#f0a04a;--brick:#ff6b5f;--blush:#7a3f35;--cream:#1d1c3a;--cream2:#26244a;--bg:#0f1020;--panel:#181a2e;--fg:#eceaf8;--chip:#22253c;--line:#2e3150}}
+:root[data-theme="dark"]{--navy:#aeb0ff;--sun:#f9a01e;--sun2:#f0a04a;--brick:#ff6b5f;--blush:#7a3f35;--cream:#1d1c3a;--cream2:#26244a;--bg:#0f1020;--panel:#181a2e;--fg:#eceaf8;--chip:#22253c;--line:#2e3150}
+html{scroll-behavior:smooth}
+body{margin:0}
+@media (prefers-reduced-motion:reduce){html{scroll-behavior:auto}}
+[hidden]{display:none!important}
+nav.top{position:sticky;top:env(safe-area-inset-top,0px);z-index:5;background:var(--panel);border-bottom:1px solid var(--line);padding-block:8px}
+nav.top .inner{display:flex;align-items:center;gap:10px}
+.mark{font-family:var(--script);font-size:26px;color:var(--navy);text-decoration:none;line-height:1;white-space:nowrap;padding-right:4px}
+.links{display:flex;gap:4px;overflow-x:auto;scrollbar-width:none;min-width:0}
+.links::-webkit-scrollbar{display:none}
+.links a{font-weight:700;font-size:14px;color:var(--fg);text-decoration:none;padding:8px 12px;border-radius:999px;white-space:nowrap}
+.links a[aria-current="page"]{background:var(--navy);color:var(--bg)}
+.links a:focus-visible,.mark:focus-visible,.btn:focus-visible,.runcard:focus-visible{outline:2px solid var(--sun2);outline-offset:2px}
+/* cover */
+.hero{background:var(--cream);border-radius:0 0 28px 28px;margin:-16px calc(-1 * max(16px,env(safe-area-inset-left,0px))) 0;padding:28px max(16px,env(safe-area-inset-left,0px)) 26px;text-align:center;position:relative;overflow:hidden}
+.hero svg.sun{display:block;width:min(320px,80%);height:auto;margin:0 auto -38px}
+.eyebrow{font-family:var(--display);font-weight:800;color:var(--brick);letter-spacing:.14em;font-size:15px;margin:0 0 2px}
+.word{font-family:var(--script);font-size:clamp(64px,19vw,96px);line-height:.95;color:var(--navy);margin:0;text-shadow:3px 3px 0 var(--bg),6px 6px 0 var(--blush);position:relative}
+.subline{font-family:var(--display);font-weight:800;text-transform:uppercase;letter-spacing:.06em;color:#7a1f1f;font-size:17px;margin:12px 0 0}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) .subline{color:var(--sun)}}
+:root[data-theme="dark"] .subline{color:var(--sun)}
+.tagline{max-width:34ch;margin:10px auto 0;color:var(--muted);font-size:15px}
+.stats{display:flex;justify-content:center;gap:22px;margin-top:18px;flex-wrap:wrap}
+.stats div{display:flex;flex-direction:column}
+.stats b{font-family:var(--display);font-size:30px;color:var(--navy);font-variant-numeric:tabular-nums;line-height:1}
+.stats span{font-size:11px;text-transform:uppercase;letter-spacing:.08em;color:var(--muted)}
+.h-sec{font-family:var(--display);font-size:22px;text-transform:uppercase;margin:6px 0 0;color:var(--navy)}
+.runcards{display:grid;gap:12px}
+.runcard{display:grid;grid-template-columns:56px minmax(0,1fr) auto;gap:12px;align-items:center;background:var(--panel);border:1px solid var(--line);border-radius:16px;padding:14px;text-decoration:none;color:var(--fg)}
+.runcard .ic{width:56px;height:56px;border-radius:14px;display:grid;place-items:center;background:var(--cream)}
+.runcard h3{font-size:22px;color:var(--fg)}
+.runcard p{margin:2px 0 8px;font-size:14px;color:var(--muted)}
+.runcard .go{font-size:22px;color:var(--navy)}
+.mini{height:8px;border-radius:4px;background:var(--chip);overflow:hidden}
+.mini i{display:block;height:100%;background:var(--done);width:0}
+.tiles{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.tile{background:var(--navy);color:var(--bg);border-radius:16px;padding:16px;text-decoration:none;display:grid;gap:4px;min-width:0}
+.tile.alt{background:var(--sun);color:#251a00}
+.tile b{font-family:var(--display);font-size:22px;text-transform:uppercase}
+.tile span{font-size:13px;opacity:.85}
+.daycard{background:var(--panel);border:1px dashed var(--sun2);border-radius:16px;padding:14px 16px}
+.daycard ul{margin:6px 0 0;padding-left:18px;display:grid;gap:4px;font-size:15px}
+.foot{text-align:center;color:var(--muted);font-size:12px;padding-top:8px}
+.foot .s{font-family:var(--script);font-size:20px;color:var(--navy)}
+/* guide + photos */
+.page-h{display:grid;gap:4px}
+.page-h .word{font-size:clamp(46px,13vw,64px);text-shadow:2px 2px 0 var(--bg),4px 4px 0 var(--blush)}
+.page-h p{margin:0;color:var(--muted)}
+.step{display:grid;grid-template-columns:40px minmax(0,1fr);gap:12px;background:var(--panel);border:1px solid var(--line);border-radius:16px;padding:14px}
+.step .n{width:40px;height:40px;border-radius:50%;background:var(--sun);color:#251a00;display:grid;place-items:center;font-family:var(--display);font-size:22px;font-weight:800}
+.step h3{font-size:20px;margin-bottom:4px}
+.step ul,.step p{margin:0;font-size:15px}
+.step ul{padding-left:18px;display:grid;gap:3px}
+.btn{display:block;text-align:center;font-weight:800;font-size:18px;padding:16px;border-radius:14px;background:var(--navy);color:var(--bg);text-decoration:none}
+.btn.sun{background:var(--sun);color:#251a00}
+.callout{background:var(--cream);border-radius:14px;padding:14px;font-size:15px}
+.callout b{color:var(--brick)}
+.cfoot .tag{font-family:var(--mono);font-size:12px;color:var(--muted);align-self:center}
+.leghead h2{color:var(--c)}
+.word{text-transform:none!important;letter-spacing:0!important;font-weight:400!important;font-size:clamp(58px,16.5vw,92px)}
+.page-h .word{font-size:clamp(46px,13vw,64px)}
+.hero svg.sun{margin-bottom:-14px}
+.subline{font-size:15px}
+.mini{display:block;margin-top:2px}
+.mark{font-size:24px}
+.links a{padding:8px 10px;font-size:13.5px}
+.runcard h3,.tile b,.step h3,.h-sec{text-transform:uppercase}
+.hero svg.sun{margin-bottom:6px}
 </style>
+<nav class="top gut" aria-label="Site"><div class="inner">
+  <a class="mark" href="#home">HDMaps26</a>
+  <div class="links">
+    <a href="#home">Home</a><a href="#run1">Run 1</a><a href="#run2">Run 2</a><a href="#photos">Photos</a><a href="#guide">Guide</a>
+  </div>
+</div></nav>
 
-<header class="top gut">
-  <div class="inner">
-    <div class="brand"><h1>North Side Sign Runs</h1><span>HQ near Foster · start 6–10 AM</span></div>
-    <div class="tabs" role="tablist">
-      <button role="tab" id="tab-r1" aria-selected="true">Run 1<small>Lake Shore + Red Line</small></button>
-      <button role="tab" id="tab-r2" aria-selected="false">Run 2<small>Irving Park + Addison</small></button>
+<main class="gut"><div class="inner" style="display:grid;gap:18px">
+
+<section id="v-home" class="view" style="display:grid;gap:18px">
+  <div class="hero">
+    <svg class="sun" viewBox="0 0 320 120" aria-hidden="true">
+      <defs><linearGradient id="g" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#f9a01e"/><stop offset="1" stop-color="#e26f1c"/></linearGradient></defs>
+      <path d="M40 120a120 120 0 0 1 240 0z" fill="url(#g)"/>
+      <g stroke="#fff3cf" stroke-width="3" opacity=".85" fill="none">
+        <path d="M160 120 L160 10"/><path d="M160 120 L95 25"/><path d="M160 120 L225 25"/><path d="M160 120 L55 65"/><path d="M160 120 L265 65"/>
+      </g>
+    </svg>
+    <p class="eyebrow">“CHICAGO’S OWN”</p>
+    <h1 class="word">HDMaps26</h1>
+    <p class="subline">Sign crew maps · Hilario for School Board President</p>
+    <p class="tagline">Two runs, 200 signs. Every stop shows exactly where its 5 signs go.</p>
+    <div class="stats">
+      <div><b>2</b><span>Runs</span></div>
+      <div><b>40</b><span>Stops</span></div>
+      <div><b id="h-signs">0/200</b><span>Signs up</span></div>
     </div>
   </div>
-</header>
 
-<main class="gut"><div class="inner" style="display:grid;gap:16px" id="app"></div></main>
+  <h2 class="h-sec">Pick your run</h2>
+  <div class="runcards">
+    <a class="runcard" href="#run1">
+      <span class="ic"><svg width="34" height="34" viewBox="0 0 34 34" aria-hidden="true"><path d="M23 3 C26 12 25 22 20 31" stroke="#1d5fa5" stroke-width="4" fill="none" stroke-linecap="round"/><path d="M11 31 C12 22 12 12 10 3" stroke="#c8102e" stroke-width="4" fill="none" stroke-linecap="round"/></svg></span>
+      <span style="min-width:0"><h3>Run 1</h3><p>Lake Shore Drive south, Red Line back north</p><span class="mini"><i id="h-r1"></i></span></span>
+      <span class="go">→</span>
+    </a>
+    <a class="runcard" href="#run2">
+      <span class="ic"><svg width="34" height="34" viewBox="0 0 34 34" aria-hidden="true"><path d="M30 11 H4" stroke="#0f7a6c" stroke-width="4" stroke-linecap="round"/><path d="M4 23 H30" stroke="#b5531b" stroke-width="4" stroke-linecap="round"/><path d="M4 11 V23" stroke="#8a8fa8" stroke-width="2" stroke-dasharray="3 3"/></svg></span>
+      <span style="min-width:0"><h3>Run 2</h3><p>Irving Park west, Addison back east</p><span class="mini"><i id="h-r2"></i></span></span>
+      <span class="go">→</span>
+    </a>
+  </div>
 
-<div class="nextbar gut" id="nextbar"><div class="inner">
+  <div class="tiles">
+    <a class="tile alt" href="#photos"><b>Photos</b><span>Upload your sign photos</span></a>
+    <a class="tile" href="#guide"><b>Guide</b><span>How the day works</span></a>
+  </div>
+
+  <div class="daycard">
+    <h3 style="font-size:19px">Day of</h3>
+    <ul>
+      <li>Meet at HQ near Foster. Roll between 6 and 10 AM.</li>
+      <li>Load 2 bundles of 50 signs, one per street.</li>
+      <li>Charge your phone. This page and Maps run all day.</li>
+      <li>One photo per sign. Upload them after each leg.</li>
+    </ul>
+  </div>
+  <p class="foot"><span class="s">Thank you, crew!</span><br>Field tool for the sign team. Ticks are saved on this phone only.</p>
+</section>
+
+<section id="v-run" class="view" hidden><div id="app" style="display:grid;gap:16px"></div></section>
+
+<section id="v-photos" class="view" style="display:grid;gap:14px" hidden>
+  <div class="page-h"><h1 class="word">Photos</h1><p>One photo per sign is how we prove the work got done.</p></div>
+  <a class="btn sun" id="drive" href="https://drive.google.com/drive/folders/1rqxm-jQnNBJ1Th2Ozc7wlGE2awMTZheB" target="_blank" rel="noopener">Open the photo folder ↗</a>
+  <div class="step"><span class="n">1</span><div><h3>Take the photo</h3><p>Get the sign and a street sign or storefront in the same shot, so anyone can tell which corner it is.</p></div></div>
+  <div class="step"><span class="n">2</span><div><h3>Open the folder</h3><p>Tap the button above. Google asks you to sign in with any Google account the first time.</p></div></div>
+  <div class="step"><span class="n">3</span><div><h3>Upload</h3><p>Tap <b>+ New</b> then <b>Upload</b>, and pick the photos from that leg. You can select a bunch at once.</p></div></div>
+  <div class="step"><span class="n">4</span><div><h3>Label it (optional)</h3><p>Each stop card shows a photo name like <code>R1-LSD-04</code>. Use it if you rename photos, or make a folder per run.</p></div></div>
+  <div class="callout"><b>Can't upload?</b> Text the photos the same way as before. Nothing gets lost.</div>
+</section>
+
+<section id="v-guide" class="view" style="display:grid;gap:14px" hidden>
+  <div class="page-h"><h1 class="word">Guide</h1><p>Everything the crew needs, in the order you'll need it.</p></div>
+  <div class="step"><span class="n">1</span><div><h3>Before you roll</h3><ul>
+    <li>Open <b>hdmaps26.github.io</b> on the phone that rides shotgun.</li>
+    <li>Add it to your home screen: Share → <b>Add to Home Screen</b> on iPhone, or ⋮ → <b>Add to Home screen</b> on Android.</li>
+    <li>Split the signs into 2 bundles of 50, one for each street of your run.</li>
+    <li>Meet at HQ near Foster. Start between 6 and 10 AM.</li></ul></div></div>
+  <div class="step"><span class="n">2</span><div><h3>Pick your run</h3><ul>
+    <li><b>Run 1:</b> Lake Shore Drive south from Hollywood to North Ave, then the Red Line north to Bryn Mawr.</li>
+    <li><b>Run 2:</b> Irving Park west from the lake, then Addison east back to the lake.</li>
+    <li>Both runs end near where they start, so nobody needs a ride back.</li></ul></div></div>
+  <div class="step"><span class="n">3</span><div><h3>Drive to the next stop</h3><ul>
+    <li>The dark bar at the bottom always shows the next stop. Tap <b>Directions</b> to open Maps.</li>
+    <li>The map at the top marks the next stop with a ring. Green dots are done.</li>
+    <li>Each card's <b>Look for</b> line names a landmark at that corner.</li></ul></div></div>
+  <div class="step"><span class="n">4</span><div><h3>Put up the 5 signs</h3><ul>
+    <li>Each stop lists 5 spots. Tap a spot when its sign is up.</li>
+    <li>Face signs toward drivers turning onto your street, or people walking out of a station.</li>
+    <li>The driver hops out, and the passenger takes the photo from the car.</li>
+    <li>When all 5 are done, the card turns green and the page jumps to the next stop.</li></ul></div></div>
+  <div class="step"><span class="n">5</span><div><h3>Run 2 turnaround</h3><p><b>California</b> is the full loop. <b>Western</b> is about 25 minutes shorter. The 10 signs you'd have put at Rockwell and California show up as dashed extra spots at the busiest stops. Each street still gets 50.</p></div></div>
+  <div class="step"><span class="n">6</span><div><h3>Send photos</h3><p>After each leg, upload the photos on the <a href="#photos">Photos</a> page.</p></div></div>
+  <div class="step"><span class="n">7</span><div><h3>If something goes wrong</h3><ul>
+    <li><b>Spot blocked:</b> use the same spot one block over, and keep it at the same stop.</li>
+    <li><b>Missed a stop:</b> keep going and add its signs to the next stop.</li>
+    <li><b>Tapped by mistake:</b> tap the spot again to undo it.</li>
+    <li><b>Two phones:</b> ticks don't sync between phones, so one person does the tapping.</li></ul></div></div>
+  <div class="callout"><b>Stay legal:</b> no signs on CTA property, on the Lake Shore Drive ramps, or inside parks. City code bars signs on poles and parkways. If a store owner says yes, a window or fence is the best spot.</div>
+</section>
+
+</div></main>
+
+<div class="nextbar gut" id="nextbar" hidden><div class="inner">
   <div style="min-width:0"><div class="lbl" id="nb-lbl">Next stop</div><div class="nm" id="nb-nm"></div></div>
   <a id="nb-go" href="#" target="_blank" rel="noopener">Directions ↗</a>
 </div></div>
-
 <script>
 const P=["Corner nearest station entrance, facing exit","Opposite corner, facing exit"];
 const ramp=(st)=>[`SB off-ramp end at ${st}`,`NB off-ramp end at ${st}`,`Marine Dr NW corner`,`Marine Dr SW corner`,`${st} ½ blk W, north side`];
@@ -214,7 +386,7 @@ const got=(k)=>st[k]||[];
 function isDone(run,r,leg,o){const n=spotsOf(run,o).length,a=got(key(r,leg.k,o.i));return a.filter(Boolean).length>=n}
 function render(){
   const run=RUNS[tab],app=document.getElementById("app");
-  ["r1","r2"].forEach(r=>document.getElementById("tab-"+r).setAttribute("aria-selected",r===tab));
+  
   let placed=0,total=0,next=null;
   run.legs.forEach(leg=>stopsOf(run,leg).forEach(o=>{const n=spotsOf(run,o).length;total+=n;placed+=Math.min(n,got(key(tab,leg.k,o.i)).filter(Boolean).length);if(!next&&!isDone(run,tab,leg,o))next={leg,o}}));
   let h=`<section class="sum">${mapSVG(tab,run,next)}<p>${run.sub}</p><div class="facts">${run.facts.map(f=>`<div><b>${f[0]}</b><span>${f[1]}</span></div>`).join("")}<div><b>${placed}/${total}</b><span>Signs up</span></div></div><div class="bar"><i style="width:${total?placed/total*100:0}%"></i></div>`;
@@ -229,7 +401,7 @@ function render(){
       const c=Math.min(sp.length,a.filter(Boolean).length);
       h+=`<article class="card${d?" done":""}${isNext?" next":""}${openDone[k]?" open":""}" id="c-${k.replace(/\./g,"-")}"><div class="chead" data-toggle="${k}"><span class="num">${d?"✓":j+1}</span><div style="min-width:0"><div class="cname">${o.s[0]}${o.f.also?`<span class="badge">Also ${o.f.also}</span>`:""}</div><div class="look">Look for: ${o.s[2]}</div></div><span class="cnt">${c}/${sp.length}</span></div>`;
       h+=`<ul class="spots">${sp.map((p,m)=>`<li><button type="button" class="${p.x?"extra":""}" aria-pressed="${!!a[m]}" data-k="${k}" data-m="${m}"><span class="box">${a[m]?"✓":""}</span><span>${p.x?"Extra: ":""}${p.t}</span></button></li>`).join("")}</ul>`;
-      h+=`<div class="cfoot"><a href="${nav(o.s[1])}" target="_blank" rel="noopener">Directions ↗</a><span style="color:var(--muted)">${o.s[1]}</span></div></article>`;
+      h+=`<div class="cfoot"><a href="${nav(o.s[1])}" target="_blank" rel="noopener">Directions ↗</a><span class="tag">Photo name: ${tab.toUpperCase()}-${leg.k.toUpperCase()}-${String(j+1).padStart(2,"0")}</span></div></article>`;
     });
     h+=`</section>`;
   });
@@ -243,8 +415,7 @@ let armed=false;
 document.getElementById("app").addEventListener("click",e=>{
   const g=e.target.closest("[data-goto]");if(g){const el=document.getElementById(g.dataset.goto);if(el)el.scrollIntoView({block:"center"});return}
   const b=e.target.closest("[data-k]");
-  if(b){const k=b.dataset.k,m=+b.dataset.m,a=got(k).slice();const wasDone=e.target.closest(".card").classList.contains("done");a[m]=!a[m];st[k]=a;save();render();
-    const card=document.querySelector(`#c-${k.replace(/\./g,"-")}`);
+  if(b){const k=b.dataset.k,m=+b.dataset.m,a=got(k).slice();const wasDone=e.target.closest(".card").classList.contains("done");a[m]=!a[m];st[k]=a;save();    const card=document.querySelector(`#c-${k.replace(/\./g,"-")}`);
     if(!wasDone&&card&&card.classList.contains("done")){const nx=document.querySelector(".card.next");if(nx)nx.scrollIntoView({block:"start",behavior:matchMedia("(prefers-reduced-motion:reduce)").matches?"auto":"smooth"})}
     return}
   const t=e.target.closest("[data-toggle]");if(t&&t.parentElement.classList.contains("done")){openDone[t.dataset.toggle]=!openDone[t.dataset.toggle];render();return}
@@ -252,6 +423,19 @@ document.getElementById("app").addEventListener("click",e=>{
   if(e.target.id==="reset"){if(!armed){armed=true;e.target.textContent="Tap again to clear";e.target.classList.add("arm");setTimeout(()=>{armed=false;render()},3000);return}
     armed=false;Object.keys(st).forEach(k=>{if(k.startsWith(tab+"."))delete st[k]});save();render()}
 });
-["r1","r2"].forEach(r=>document.getElementById("tab-"+r).addEventListener("click",()=>{tab=r;save();render();scrollTo(0,0)}));
-render();
+
+
+function prog(r){const run=RUNS[r];let p=0,t=0;run.legs.forEach(leg=>stopsOf(run,leg).forEach(o=>{const n=spotsOf(run,o).length;t+=n;p+=Math.min(n,got(key(r,leg.k,o.i)).filter(Boolean).length)}));return [p,t]}
+function homeStats(){const a=prog("r1"),b=prog("r2");document.getElementById("h-signs").textContent=`${a[0]+b[0]}/${a[1]+b[1]}`;document.getElementById("h-r1").style.width=(a[0]/a[1]*100)+"%";document.getElementById("h-r2").style.width=(b[0]/b[1]*100)+"%"}
+function route(){
+  let h=(location.hash||"#home").slice(1);if(!["home","run1","run2","photos","guide"].includes(h))h="home";
+  document.querySelectorAll(".view").forEach(v=>v.hidden=true);
+  const nb=document.getElementById("nextbar");
+  if(h==="run1"||h==="run2"){tab=h==="run1"?"r1":"r2";save();document.getElementById("v-run").hidden=false;nb.hidden=false;render()}
+  else{document.getElementById("v-"+h).hidden=false;nb.hidden=true;if(h==="home")homeStats()}
+  document.querySelectorAll(".links a").forEach(a=>a.setAttribute("aria-current",a.getAttribute("href")==="#"+h?"page":"false"));
+  const cur=document.querySelector('.links a[aria-current="page"]');if(cur)cur.scrollIntoView({inline:"center",block:"nearest"});
+  window.scrollTo(0,0);
+}
+addEventListener("hashchange",route);route();
 </script>
